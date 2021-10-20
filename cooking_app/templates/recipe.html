@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <script src="https://kit.fontawesome.com/098c10e768.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Cuprum&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Кулинария</title>
+</head>
+<body>
+<header>
+    <nav class="dvs-menu">
+            <ul>
+                <li><a href="#"><i class="fas fa-glass-cheers"></i> Меню</a>
+                                    <ul>
+                        <li><a href="#">Посмотреть меню</a></li>
+                        <li><a href="#">Составить меню</a></li>
+                                    </ul>
+                </li>
+                <li><a href="#"><i class="fas fa-lemon"></i> Список покупок</a>
+                </li>
+                <li><a href="#"><i class="fas fa-pizza-slice"></i> Мои рецепты</a>
+                                    <ul>
+                        <li><a href="#">Посмотреть рецепты</a></li>
+                        <li><a href="#">Создать новый рецепт</a></li>
+<!--                        <li><a href="#">Отредактировать рецепт</a></li>-->
+<!--                        <li><a href="#">Удалить рецепт</a></li>-->
+                        <li><a href="#">Что приготовить</a></li>
+                    </ul>
+                </li>
+                <li><a href="/recipes/ingredients"><i class="fas fa-bone"></i> Ингридиенты</a>
+                </li>
+                <li><a href="#"><i class="fas fa-percentage"></i> Калории</a></li>
+            </ul>
+    </nav>
+</header>
+<!--Все рецепты:-->
+<!--<br>-->
+<!--{% for recipe in recipe_list %}-->
+<!--<a href="/recipes/{{ recipe.name }}/" target="_blank">{{ recipe.name }}</a>-->
+<!--<br>-->
+<!--{% endfor %}-->
+
+<!--<br>-->
+<!--Все категории:-->
+<!--<br>-->
+<!--<select>-->
+<!--    <option value="">Выберите значение</option>-->
+<!--      {% for recipe in recipe_list %}-->
+<!--	<option>{{ recipe.category }}</option>-->
+<!--  {% endfor %}-->
+<!--</select>-->
+
+</body>
+</html>
