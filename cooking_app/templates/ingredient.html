@@ -12,10 +12,24 @@
 <header>
         <nav class="dvs-menu">
             <ul>
+                {% if ingredient_list|length > 1 %}
+                <li><a href="/recipes/newingredient" title="Новый ингридиент"><i class="fas fa-plus"></i></a></li>
                 {% for ingredient in ingredient_list %}
                 <li><a href="/recipes/ingredients/{{ ingredient.id }}">{{ ingredient.name }}</a></li>
                 {% endfor %}
-                <li><a href="/recipes/newingredient" title="Новый ингридиент"><i class="fas fa-plus"></i></a></li>
+                {% else %}
+                {% for ingredient in ingredient_list %}
+                <li><a href="">{{ ingredient.name }}</a></li>
+                <br>
+                <li><a href="">калорийность на 100 гр. - {{ ingredient.calories_per_100_gr }} ккал.</a></li>
+                <br>
+                <li><a href="">белки на 100 гр. - {{ ingredient.protein_per_100_gr }} гр.</a></li>
+                <br>
+                <li><a href="">жиры на 100 гр. - {{ ingredient.fat_per_100_gr }} гр.</a></li>
+                <br>
+                <li><a href="">углеводы на 100 гр. - {{ ingredient.carbohydrates_per_100_gr }} гр.</a></li>
+                {% endfor %}
+                {% endif %}
             </ul>
 </header>
 
