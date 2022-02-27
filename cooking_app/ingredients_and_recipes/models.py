@@ -19,6 +19,8 @@ class Ingredient(models.Model):
 class IngredientQuantity(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     quantity_gr = models.PositiveIntegerField()
+    measure = models.CharField(max_length=255, blank=True)
+    annotation = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.ingredient.name + " - " + str(self.quantity_gr) + " гр."
@@ -40,7 +42,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=255)
     ingredient_quantity = models.ManyToManyField(IngredientQuantity, verbose_name="list of ingredients")
     how_to_cook = models.TextField()
-    for_how_many_persons = models.PositiveSmallIntegerField()
+    for_how_many_persons = models.PositiveSmallIntegerField(blank=True, null=True)
     category = models.ForeignKey(RecipeCategory, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
