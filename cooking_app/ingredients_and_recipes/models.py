@@ -3,10 +3,10 @@ from django.db import models
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=255)
-    calories_per_100_gr = models.PositiveIntegerField()
-    protein_per_100_gr = models.PositiveIntegerField()
-    fat_per_100_gr = models.PositiveIntegerField()
-    carbohydrates_per_100_gr = models.PositiveIntegerField()
+    calories_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
+    protein_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
+    fat_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
+    carbohydrates_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -23,7 +23,10 @@ class IngredientQuantity(models.Model):
     annotation = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return self.ingredient.name + " - " + str(self.quantity_gr) + " гр."
+        if not self.annotation:
+            return self.ingredient.name + " - " + str(self.quantity_gr)+ " " + self.measure
+        else:
+            return self.ingredient.name + " " + self.annotation
 
 
 class RecipeCategory(models.Model):

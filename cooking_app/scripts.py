@@ -96,7 +96,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-from ingredients_and_recipes.models import IngredientQuantity
+from ingredients_and_recipes.models import IngredientQuantity, Ingredient
 
 page = requests.get("https://povar.ru/recipes/salat_granatovyi-73167.html")
 soup = BeautifulSoup(page.text, "html.parser")
@@ -119,8 +119,15 @@ for i in ingr:
             else:
                 quantity_measure += lit
         quantity_num = int(quantity_num)
-
-        IngredientQuantity.objects.create(ingredient=name_and_quantity[0], quantity_gr=quantity_num, measure=quantity_measure, annotation=quantity_annotation)
+        try:
+            current_ingredient = Ingredient.objects.get(name=name_and_quantity[0])
+            IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
+                                              measure=quantity_measure, annotation=quantity_annotation)
+        except:
+            n_a_q = name_and_quantity[0].capitalize()
+            current_ingredient = Ingredient.objects.create(name=n_a_q)
+            IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
+                                              measure=quantity_measure, annotation=quantity_annotation)
     else:
         quantity_annotation = name_and_quantity[1]
 
