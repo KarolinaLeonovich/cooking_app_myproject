@@ -96,13 +96,13 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-from ingredients_and_recipes.models import IngredientQuantity, Ingredient
+from ingredients_and_recipes.models import IngredientQuantity, Ingredient, Recipe
 
 page = requests.get("https://povar.ru/recipes/salat_granatovyi-73167.html")
 soup = BeautifulSoup(page.text, "html.parser")
 name_rus = soup.find("h1", attrs={"class": "detailed", "itemprop": "name"})
-print(name_rus.get_text())
 ingr = soup.find_all("li", attrs={"itemprop": "recipeIngredient"})
+ingred_array = []
 for i in ingr:
     line = i.get_text()
     name_and_quantity = line.split('—')
@@ -120,17 +120,33 @@ for i in ingr:
                 quantity_measure += lit
         quantity_num = int(quantity_num)
         try:
-            current_ingredient = Ingredient.objects.get(name=name_and_quantity[0])
-            IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
+            base_name = name_and_quantity[0].capitalize()
+            current_ingredient = Ingredient.objects.get(name=base_name)
+            temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
                                               measure=quantity_measure, annotation=quantity_annotation)
+            ingred_array.append(temp_var)
         except:
             n_a_q = name_and_quantity[0].capitalize()
-            current_ingredient = Ingredient.objects.create(name=n_a_q)
-            IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
+            print(n_a_q)
+            cur_ingredient = Ingredient.objects.create(name=n_a_q)
+            temp_var = IngredientQuantity.objects.create(ingredient=cur_ingredient, quantity_gr=quantity_num,
                                               measure=quantity_measure, annotation=quantity_annotation)
+            ingred_array.append(temp_var)
     else:
         quantity_annotation = name_and_quantity[1]
 
+ingred_tupl = tuple(ingred_array)
+Recipe.objects.create(name=cur_ingredient, quantity_gr=quantity_num,
+                                              measure=quantity_measure, annotation=quantity_annotation)
+
+
+
+
+name = models.CharField(max_length=255)
+    ingredient_quantity = models.ManyToManyField(IngredientQuantity, verbose_name="list of ingredients")
+    how_to_cook = models.TextField()
+    for_how_many_persons = models.PositiveSmallIntegerField(blank=True, null=True)
+    category = models.ForeignKey(RecipeCategory, on_delete=models.SET_NULL, blank=True, null=True)
 
 how_to_cook = soup.find_all("div", attrs={"class": "detailed_step_description_big"})
 h_t_c = ""

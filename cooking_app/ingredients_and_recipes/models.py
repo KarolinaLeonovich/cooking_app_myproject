@@ -43,6 +43,7 @@ class RecipeCategory(models.Model):
 
 class Recipe(models.Model):
     name = models.CharField(max_length=255)
+    eng_name = models.CharField(max_length=255, blank=True, null=True)
     ingredient_quantity = models.ManyToManyField(IngredientQuantity, verbose_name="list of ingredients")
     how_to_cook = models.TextField()
     for_how_many_persons = models.PositiveSmallIntegerField(blank=True, null=True)
