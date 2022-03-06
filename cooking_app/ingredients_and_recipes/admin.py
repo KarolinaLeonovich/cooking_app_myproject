@@ -15,6 +15,13 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(IngredientQuantity)
 class IngredientQuantityAdmin(admin.ModelAdmin):
+    # list_display = (
+    #     'ingredient',
+    #     'quantity_gr',
+    #     'measure',
+    #     'annotation',
+    #     'recipe_belong_to',
+    # )
 
     def has_module_permission(self, request):
         return False

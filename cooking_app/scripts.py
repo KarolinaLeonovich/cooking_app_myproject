@@ -93,64 +93,69 @@ import csv
 # file.close()
 
 
+
+from time import sleep
+import random
 import requests
 from bs4 import BeautifulSoup
-
 from ingredients_and_recipes.models import IngredientQuantity, Ingredient, Recipe
+file = open("otus.txt", "r")
+lines = file.readlines()
+random_int = random.randint(1, 3)
+count = 30
+headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
+}
+for line in lines:
+    if count == 0:
+        break
+    url = line.strip()
+    page = requests.get(url, headers=headers)
+    soup = BeautifulSoup(page.text, "html.parser")
+    name_ru = soup.find("h1", attrs={"class": "detailed", "itemprop": "name"})
+    name_rus = name_ru.get_text().strip()
+    ingr = soup.find_all("li", attrs={"itemprop": "recipeIngredient"})
+    ingred_array = []
+    eng_name1 = url[25:]
+    eng_name = eng_name1[:-5]
+    for i in ingr:
+        line = i.get_text()
+        name_and_quantity = line.split('—')
+        name_and_quantity[0] = name_and_quantity[0].replace(u'\xa0', u'')
+        name_and_quantity[0] = name_and_quantity[0].strip()
+        name_and_quantity[1] = name_and_quantity[1].replace(u'\xa0', u'')
+        quantity_num = ''
+        quantity_measure = ""
+        quantity_annotation = ""
+        if name_and_quantity[1][0].isdigit():
+            for iden, lit in enumerate(name_and_quantity[1]):
+                if lit.isdigit() and iden < 5:
+                    quantity_num += lit
+                else:
+                    quantity_measure += lit
+            quantity_num = int(quantity_num)
+            try:
+                base_name = name_and_quantity[0].capitalize()
+                current_ingredient = Ingredient.objects.get(name=base_name)
+                temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
+                                                  measure=quantity_measure, annotation=quantity_annotation)
+                ingred_array.append(temp_var)
+            except:
+                n_a_q = name_and_quantity[0].capitalize()
+                cur_ingredient = Ingredient.objects.create(name=n_a_q)
+                temp_var = IngredientQuantity.objects.create(ingredient=cur_ingredient, quantity_gr=quantity_num,
+                                                  measure=quantity_measure, annotation=quantity_annotation)
+                ingred_array.append(temp_var)
+        else:
+            quantity_annotation = name_and_quantity[1]
+    how_to_cook = soup.find_all("div", attrs={"class": "detailed_step_description_big"})
+    h_t_c = ""
+    for i in how_to_cook:
+        h_t_c += i.get_text()
+        h_t_c += " "
+    k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c)
+    k.ingredient_quantity.set(ingred_array)
+    sleep(random_int)
+    count -= 1
 
-page = requests.get("https://povar.ru/recipes/salat_granatovyi-73167.html")
-soup = BeautifulSoup(page.text, "html.parser")
-name_rus = soup.find("h1", attrs={"class": "detailed", "itemprop": "name"})
-ingr = soup.find_all("li", attrs={"itemprop": "recipeIngredient"})
-ingred_array = []
-for i in ingr:
-    line = i.get_text()
-    name_and_quantity = line.split('—')
-    name_and_quantity[0] = name_and_quantity[0].replace(u'\xa0', u'')
-    name_and_quantity[0] = name_and_quantity[0].strip()
-    name_and_quantity[1] = name_and_quantity[1].replace(u'\xa0', u'')
-    quantity_num = ''
-    quantity_measure = ""
-    quantity_annotation = ""
-    if name_and_quantity[1][0].isdigit():
-        for iden, lit in enumerate(name_and_quantity[1]):
-            if lit.isdigit() and iden < 5:
-                quantity_num += lit
-            else:
-                quantity_measure += lit
-        quantity_num = int(quantity_num)
-        try:
-            base_name = name_and_quantity[0].capitalize()
-            current_ingredient = Ingredient.objects.get(name=base_name)
-            temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
-                                              measure=quantity_measure, annotation=quantity_annotation)
-            ingred_array.append(temp_var)
-        except:
-            n_a_q = name_and_quantity[0].capitalize()
-            print(n_a_q)
-            cur_ingredient = Ingredient.objects.create(name=n_a_q)
-            temp_var = IngredientQuantity.objects.create(ingredient=cur_ingredient, quantity_gr=quantity_num,
-                                              measure=quantity_measure, annotation=quantity_annotation)
-            ingred_array.append(temp_var)
-    else:
-        quantity_annotation = name_and_quantity[1]
-
-ingred_tupl = tuple(ingred_array)
-Recipe.objects.create(name=cur_ingredient, quantity_gr=quantity_num,
-                                              measure=quantity_measure, annotation=quantity_annotation)
-
-
-
-
-name = models.CharField(max_length=255)
-    ingredient_quantity = models.ManyToManyField(IngredientQuantity, verbose_name="list of ingredients")
-    how_to_cook = models.TextField()
-    for_how_many_persons = models.PositiveSmallIntegerField(blank=True, null=True)
-    category = models.ForeignKey(RecipeCategory, on_delete=models.SET_NULL, blank=True, null=True)
-
-how_to_cook = soup.find_all("div", attrs={"class": "detailed_step_description_big"})
-h_t_c = ""
-for i in how_to_cook:
-    h_t_c += i.get_text()
-    h_t_c += " "
-print(h_t_c)
+file.close()
