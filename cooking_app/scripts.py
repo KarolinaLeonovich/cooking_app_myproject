@@ -153,9 +153,13 @@ for line in lines:
     for i in how_to_cook:
         h_t_c += i.get_text()
         h_t_c += " "
-    k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c)
+    portions = soup.find("em", attrs={"itemprop": "recipeYield"})
+    numb_port = int(portions.get_text()[-1])
+    k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c, for_how_many_persons=numb_port)
     k.ingredient_quantity.set(ingred_array)
     sleep(random_int)
     count -= 1
 
 file.close()
+
+

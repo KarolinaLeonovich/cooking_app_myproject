@@ -1,5 +1,3 @@
-from django.http import request
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from ingredients_and_recipes.forms import IngredientForm

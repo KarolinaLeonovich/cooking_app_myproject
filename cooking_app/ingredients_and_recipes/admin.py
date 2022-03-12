@@ -27,16 +27,9 @@ class IngredientQuantityAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(RecipeCategory)
-class RecipeCategoryAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-    )
-
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'category'
     )
