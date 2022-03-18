@@ -38,34 +38,34 @@ import csv
 #
 
 
-# #with postgres base
-# import psycopg2
-#
-#
-# conn = psycopg2.connect(
-#     host="localhost",
-#     database="recipes",
-#     user="postgres",
-#     password="12345")
-#
-# cursor = conn.cursor()
+#with postgres base
+import psycopg2
+import csv
 
-# cursor.execute('''select * from ingredients_and_recipes_ingredient''')
-#
-# k = cursor.fetchall()
-# for i in k:
-#     s = ''
-#     for j in i:
-#         s += str(j) + ' '
-#     print(s)
+conn = psycopg2.connect(
+    host="localhost",
+    database="recipes",
+    user="postgres",
+    password="12345")
 
-# with open('Ingridients.csv', encoding="utf8", newline='') as File:
-#     reader = csv.reader(File, delimiter=",")
-#     for row in reader:
-#             cursor.execute('''INSERT INTO ingredients_and_recipes_ingredient
-#                            (name, protein_per_100_gr, fat_per_100_gr, carbohydrates_per_100_gr, calories_per_100_gr)
-#                            VALUES (%s,%s,%s,%s,%s)''', (row[0], row[1], row[2], row[3], row[4]))
-#             conn.commit()
+cursor = conn.cursor()
+
+cursor.execute('''select * from ingredients_and_recipes_ingredient''')
+
+k = cursor.fetchall()
+for i in k:
+    s = ''
+    for j in i:
+        s += str(j) + ' '
+    print(s)
+
+with open('Ingridients.csv', encoding="utf8", newline='') as File:
+    reader = csv.reader(File, delimiter=",")
+    for row in reader:
+            cursor.execute('''INSERT INTO ingredients_and_recipes_ingredient
+                           (name, protein_per_100_gr, fat_per_100_gr, carbohydrates_per_100_gr, calories_per_100_gr)
+                           VALUES (%s,%s,%s,%s,%s)''', (row[0], row[1], row[2], row[3], row[4]))
+            conn.commit()
 
 # Grabbing for recipes)
 
@@ -102,11 +102,12 @@ from ingredients_and_recipes.models import IngredientQuantity, Ingredient, Recip
 file = open("otus.txt", "r")
 lines = file.readlines()
 random_int = random.randint(1, 3)
-count = 30
+count = 100
 headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
 }
 for line in lines:
+    print(line)
     if count == 0:
         break
     url = line.strip()
@@ -129,14 +130,36 @@ for line in lines:
         quantity_annotation = ""
         if name_and_quantity[1][0].isdigit():
             for iden, lit in enumerate(name_and_quantity[1]):
-                if lit.isdigit() and iden < 5:
+                if not lit.isalpha() and iden < 8:
                     quantity_num += lit
                 else:
                     quantity_measure += lit
-            quantity_num = int(quantity_num)
+            quantity_num = quantity_num.replace(".", "")
+            quantity_num = quantity_num.replace(",", ".")
+            quantity_num = quantity_num.replace(" ", "")
+            quantity_num = quantity_num.replace("(", "")
+            if "/" in quantity_num and '-' in quantity_num:
+                quantity_num_array3 = quantity_num.split("-")
+                quantity_num_array3_1 = quantity_num_array3[0].split("/")
+                quantity_num_array3_2 = quantity_num_array3[1].split("/")
+                quantity_num_3_1 = float(quantity_num_array3_1[0]) / float(quantity_num_array3_1[1])
+                quantity_num_3_2 = float(quantity_num_array3_2[0]) / float(quantity_num_array3_2[1])
+                quantity_num = quantity_num_3_1 + quantity_num_3_2 / 2
+            elif "/" in quantity_num:
+                quantity_num_array = quantity_num.split("/")
+                num1 = float(quantity_num_array[0])
+                num2 = float(quantity_num_array[1])
+                quantity_num = num1 / num2
+            elif '-' in quantity_num:
+                quantity_num_array2 = quantity_num.split("-")
+                num1 = float(quantity_num_array2[0])
+                num2 = float(quantity_num_array2[1])
+                quantity_num = num1 + num2 / 2
+            quantity_num = float(quantity_num)
             try:
                 base_name = name_and_quantity[0].capitalize()
                 current_ingredient = Ingredient.objects.get(name=base_name)
+                print("Success!", current_ingredient)
                 temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
                                                   measure=quantity_measure, annotation=quantity_annotation)
                 ingred_array.append(temp_var)
@@ -154,7 +177,10 @@ for line in lines:
         h_t_c += i.get_text()
         h_t_c += " "
     portions = soup.find("em", attrs={"itemprop": "recipeYield"})
-    numb_port = int(portions.get_text()[-1])
+    try:
+        numb_port = int(portions.get_text()[-1])
+    except ValueError:
+        numb_port = 0
     k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c, for_how_many_persons=numb_port)
     k.ingredient_quantity.set(ingred_array)
     sleep(random_int)
@@ -163,3 +189,9 @@ for line in lines:
 file.close()
 
 
+#freshlines
+from ingredients_and_recipes.models import IngredientQuantity
+e = IngredientQuantity.objects.all()
+e.delete()
+r = Recipe.objects.all()
+r.delete()
