@@ -195,3 +195,4 @@ e = IngredientQuantity.objects.all()
 e.delete()
 r = Recipe.objects.all()
 r.delete()
+

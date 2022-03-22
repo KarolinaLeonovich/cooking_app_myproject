@@ -25,3 +25,14 @@ class IngredientDetailView(ListView):
             return Ingredient.objects.all()
         else:
             return Ingredient.objects.filter(id=self.kwargs['ing_id'])
+
+
+class RecipeDetailView(ListView):
+    model = Ingredient
+    template_name = 'recipe_detail.html'
+
+    def get_queryset(self):
+        if self.kwargs['rec_id'] == 0:
+            return Recipe.objects.all()
+        else:
+            return Recipe.objects.filter(id=self.kwargs['rec_id'])
