@@ -1,5 +1,21 @@
 from django.db import models
 
+MEASURES_CHOICES =(
+    ("стак.", "стак."),
+    ("ст.л.", "ст.л."),
+    ("чл.", "ч.л."),
+    ("гр.", "гр."),
+    ("кг.", "кг."),
+    ("шт.", "шт."),
+    ("пуч.", "пуч."),
+    ("зуб.", "зуб."),
+    ("щепотк.", "щепотк."),
+    ("л.", "л."),
+    ("мл.", "мл."),
+    ("ломт.", "ломт"),
+    ("гол.", "гол."),
+    ("вет.", "вет."),
+)
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=255)
@@ -7,20 +23,19 @@ class Ingredient(models.Model):
     protein_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
     fat_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
     carbohydrates_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
+    cup250sm = models.PositiveIntegerField(blank=True, null=True)
+    bigspoon = models.PositiveIntegerField(blank=True, null=True)
+    littlespoon = models.PositiveIntegerField(blank=True, null=True)
+    onepiece = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
-    # def save(self, *args, **kwargs):
-    #     self.name = self.name.lower()
-    #     return super(Ingredient, self).save(*args, **kwargs)
-
-
 
 class IngredientQuantity(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    quantity_gr = models.PositiveIntegerField()
-    measure = models.CharField(max_length=255, blank=True)
+    quantity = models.FloatField(blank=True, null=True)
+    measure = models.CharField(max_length=255, choices=MEASURES_CHOICES)
     annotation = models.CharField(max_length=255, blank=True)
 
     def __str__(self):

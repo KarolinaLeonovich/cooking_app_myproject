@@ -101,96 +101,100 @@ from bs4 import BeautifulSoup
 from ingredients_and_recipes.models import IngredientQuantity, Ingredient, Recipe
 file = open("otus.txt", "r")
 lines = file.readlines()
-random_int = random.randint(1, 3)
+random_int = random.randint(1, 6)
 count = 100
+link_number = 121 #задаем последний спижженый рецепт
 headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'
 }
-for line in lines:
-    print(line)
-    if count == 0:
-        break
-    url = line.strip()
-    page = requests.get(url, headers=headers)
-    soup = BeautifulSoup(page.text, "html.parser")
-    name_ru = soup.find("h1", attrs={"class": "detailed", "itemprop": "name"})
-    name_rus = name_ru.get_text().strip()
-    ingr = soup.find_all("li", attrs={"itemprop": "recipeIngredient"})
-    ingred_array = []
-    eng_name1 = url[25:]
-    eng_name = eng_name1[:-5]
-    for i in ingr:
-        line = i.get_text()
-        name_and_quantity = line.split('—')
-        name_and_quantity[0] = name_and_quantity[0].replace(u'\xa0', u'')
-        name_and_quantity[0] = name_and_quantity[0].strip()
-        name_and_quantity[1] = name_and_quantity[1].replace(u'\xa0', u'')
-        quantity_num = ''
-        quantity_measure = ""
-        quantity_annotation = ""
-        if name_and_quantity[1][0].isdigit():
-            for iden, lit in enumerate(name_and_quantity[1]):
-                if not lit.isalpha() and iden < 8:
-                    quantity_num += lit
-                else:
-                    quantity_measure += lit
-            quantity_num = quantity_num.replace(".", "")
-            quantity_num = quantity_num.replace(",", ".")
-            quantity_num = quantity_num.replace(" ", "")
-            quantity_num = quantity_num.replace("(", "")
-            if "/" in quantity_num and '-' in quantity_num:
-                quantity_num_array3 = quantity_num.split("-")
-                quantity_num_array3_1 = quantity_num_array3[0].split("/")
-                quantity_num_array3_2 = quantity_num_array3[1].split("/")
-                quantity_num_3_1 = float(quantity_num_array3_1[0]) / float(quantity_num_array3_1[1])
-                quantity_num_3_2 = float(quantity_num_array3_2[0]) / float(quantity_num_array3_2[1])
-                quantity_num = quantity_num_3_1 + quantity_num_3_2 / 2
-            elif "/" in quantity_num:
-                quantity_num_array = quantity_num.split("/")
-                num1 = float(quantity_num_array[0])
-                num2 = float(quantity_num_array[1])
-                quantity_num = num1 / num2
-            elif '-' in quantity_num:
-                quantity_num_array2 = quantity_num.split("-")
-                num1 = float(quantity_num_array2[0])
-                num2 = float(quantity_num_array2[1])
-                quantity_num = num1 + num2 / 2
-            quantity_num = float(quantity_num)
-            try:
-                base_name = name_and_quantity[0].capitalize()
-                current_ingredient = Ingredient.objects.get(name=base_name)
-                print("Success!", current_ingredient)
-                temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity_gr=quantity_num,
-                                                  measure=quantity_measure, annotation=quantity_annotation)
-                ingred_array.append(temp_var)
-            except:
-                n_a_q = name_and_quantity[0].capitalize()
-                cur_ingredient = Ingredient.objects.create(name=n_a_q)
-                temp_var = IngredientQuantity.objects.create(ingredient=cur_ingredient, quantity_gr=quantity_num,
-                                                  measure=quantity_measure, annotation=quantity_annotation)
-                ingred_array.append(temp_var)
-        else:
-            quantity_annotation = name_and_quantity[1]
-    how_to_cook = soup.find_all("div", attrs={"class": "detailed_step_description_big"})
-    h_t_c = ""
-    for i in how_to_cook:
-        h_t_c += i.get_text()
-        h_t_c += " "
-    portions = soup.find("em", attrs={"itemprop": "recipeYield"})
-    try:
-        numb_port = int(portions.get_text()[-1])
-    except ValueError:
-        numb_port = 0
-    k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c, for_how_many_persons=numb_port)
-    k.ingredient_quantity.set(ingred_array)
-    sleep(random_int)
-    count -= 1
+for inx, line in enumerate(lines):
+    if inx > link_number:
+        print(line)
+        if count == 0:
+            break
+        url = line.strip()
+        page = requests.get(url, headers=headers)
+        soup = BeautifulSoup(page.text, "html.parser")
+        name_ru = soup.find("h1", attrs={"class": "detailed", "itemprop": "name"})
+        name_rus = name_ru.get_text().strip()
+        ingr = soup.find_all("li", attrs={"itemprop": "recipeIngredient"})
+        ingred_array = []
+        eng_name1 = url[25:]
+        eng_name = eng_name1[:-5]
+        for i in ingr:
+            line = i.get_text()
+            name_and_quantity = line.split('—')
+            name_and_quantity[0] = name_and_quantity[0].replace(u'\xa0', u'')
+            name_and_quantity[0] = name_and_quantity[0].strip()
+            name_and_quantity[1] = name_and_quantity[1].replace(u'\xa0', u'')
+            quantity_num = ''
+            quantity_measure = ""
+            quantity_annotation = ""
+            if name_and_quantity[1][0].isdigit():
+                for iden, lit in enumerate(name_and_quantity[1]):
+                    if not lit.isalpha() and iden < 8:
+                        quantity_num += lit
+                    else:
+                        quantity_measure += lit
+                quantity_num = quantity_num.replace(".", "")
+                quantity_num = quantity_num.replace(",", ".")
+                quantity_num = quantity_num.replace(" ", "")
+                quantity_num = quantity_num.replace("(", "")
+                quantity_num = quantity_num.replace('\\', "/")
+                if "/" in quantity_num and '-' in quantity_num:
+                    quantity_num_array3 = quantity_num.split("-")
+                    quantity_num_array3_1 = quantity_num_array3[0].split("/")
+                    quantity_num_array3_2 = quantity_num_array3[1].split("/")
+                    quantity_num_3_1 = float(quantity_num_array3_1[0]) / float(quantity_num_array3_1[1])
+                    quantity_num_3_2 = float(quantity_num_array3_2[0]) / float(quantity_num_array3_2[1])
+                    quantity_num = quantity_num_3_1 + quantity_num_3_2 / 2
+                elif "/" in quantity_num:
+                    quantity_num_array = quantity_num.split("/")
+                    num1 = float(quantity_num_array[0])
+                    num2 = float(quantity_num_array[1])
+                    quantity_num = num1 / num2
+                elif '-' in quantity_num:
+                    quantity_num_array2 = quantity_num.split("-")
+                    num1 = float(quantity_num_array2[0])
+                    num2 = float(quantity_num_array2[1])
+                    quantity_num = num1 + num2 / 2
+                quantity_num = float(quantity_num)
+                try:
+                    base_name = name_and_quantity[0].capitalize()
+                    current_ingredient = Ingredient.objects.get(name=base_name)
+                    print("Success!", current_ingredient)
+                    temp_var = IngredientQuantity.objects.create(ingredient=current_ingredient, quantity=quantity_num,
+                                                      measure=quantity_measure, annotation=quantity_annotation)
+                    ingred_array.append(temp_var)
+                except:
+                    n_a_q = name_and_quantity[0].capitalize()
+                    cur_ingredient = Ingredient.objects.create(name=n_a_q)
+                    temp_var = IngredientQuantity.objects.create(ingredient=cur_ingredient, quantity=quantity_num,
+                                                      measure=quantity_measure, annotation=quantity_annotation)
+                    ingred_array.append(temp_var)
+            else:
+                quantity_annotation = name_and_quantity[1]
+        how_to_cook = soup.find_all("div", attrs={"class": "detailed_step_description_big"})
+        h_t_c = ""
+        for i in how_to_cook:
+            h_t_c += i.get_text()
+            h_t_c += " "
+        portions = soup.find("em", attrs={"itemprop": "recipeYield"})
+        try:
+            numb_port = int(portions.get_text()[-1])
+        except ValueError:
+            numb_port = 0
+        k = Recipe.objects.create(name=name_rus, eng_name=eng_name, how_to_cook=h_t_c, for_how_many_persons=numb_port)
+        k.ingredient_quantity.set(ingred_array)
+        sleep(random_int)
+        count -= 1
+        print(count)
 
 file.close()
 
 
 #freshlines
-from ingredients_and_recipes.models import IngredientQuantity
+from ingredients_and_recipes.models import IngredientQuantity, Recipe
 e = IngredientQuantity.objects.all()
 e.delete()
 r = Recipe.objects.all()
