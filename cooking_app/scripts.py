@@ -200,3 +200,61 @@ e.delete()
 r = Recipe.objects.all()
 r.delete()
 
+#parcing of measurmants
+import psycopg2
+import csv
+
+conn = psycopg2.connect(
+    host="localhost",
+    database="recipes",
+    user="postgres",
+    password="12345")
+
+cursor = conn.cursor()
+
+cursor.execute('''select * from ingredients_and_recipes_ingredient''')
+row1 = 0
+row2 = 0
+row3 = 0
+row4 = 0
+k = cursor.fetchall()
+with open('mesurments.csv', encoding="utf8", newline='') as File:
+    reader = csv.reader(File, delimiter=",")
+    for row in reader:
+        for i in k:
+            if row[0] == i[1]:
+                if row[1] != '-':
+                    row1 = row[1]
+                    row1 = row1.replace(",", ".")
+                    row1 = float(row1)
+                if row[2] != '-':
+                    row2 = row[2]
+                    row2 = row2.replace(",", ".")
+                    row2 = float(row2)
+                if row[3] != '-':
+                    row3 = row[3]
+                    row3 = row3.replace(",", ".")
+                    row3 = float(row3)
+                if row[4] != '-':
+                    row4 = row[4]
+                    row4 = row4.replace(",", ".")
+                    row4 = float(row4)
+                    print(row[0])
+                    print(row1, row2, row3, row4, i[1])
+                    print(row[1], row[2], row[3], row[4], i[1])
+                    cursor.execute("""UPDATE ingredients_and_recipes_ingredient
+                                       SET cup250sm = %s WHERE name = %s""", (row1, i[1]))
+                    cursor.execute("""UPDATE ingredients_and_recipes_ingredient
+                                       SET bigspoon = %s WHERE name = %s""", (row2, i[1]))
+                    cursor.execute("""UPDATE ingredients_and_recipes_ingredient
+                                       SET littlespoon = %s WHERE name = %s""", (row3, i[1]))
+                    cursor.execute("""UPDATE ingredients_and_recipes_ingredient
+                                       SET onepiece = %s WHERE name = %s""", (row4, i[1]))
+                    conn.commit()
+        row1 = 0
+        row2 = 0
+        row3 = 0
+        row4 = 0
+
+
+

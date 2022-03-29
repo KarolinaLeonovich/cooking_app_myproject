@@ -23,10 +23,10 @@ class Ingredient(models.Model):
     protein_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
     fat_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
     carbohydrates_per_100_gr = models.PositiveIntegerField(blank=True, null=True)
-    cup250sm = models.PositiveIntegerField(blank=True, null=True)
-    bigspoon = models.PositiveIntegerField(blank=True, null=True)
-    littlespoon = models.PositiveIntegerField(blank=True, null=True)
-    onepiece = models.PositiveIntegerField(blank=True, null=True)
+    cup250sm = models.FloatField(blank=True, null=True)
+    bigspoon = models.FloatField(blank=True, null=True)
+    littlespoon = models.FloatField(blank=True, null=True)
+    onepiece = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -58,3 +58,4 @@ class Recipe(models.Model):
     # def save(self, *args, **kwargs):
     #     self.name = self.name.capitalize()
     #     return super(Recipe, self).save(*args, **kwargs)
+
