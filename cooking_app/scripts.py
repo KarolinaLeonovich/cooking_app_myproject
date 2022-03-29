@@ -222,7 +222,7 @@ with open('mesurments.csv', encoding="utf8", newline='') as File:
     reader = csv.reader(File, delimiter=",")
     for row in reader:
         for i in k:
-            if row[0] == i[1]:
+            if row[0].lower() == i[1].lower() or (row[0] in i[1]) or (i[1] in row[0]):
                 if row[1] != '-':
                     row1 = row[1]
                     row1 = row1.replace(",", ".")
