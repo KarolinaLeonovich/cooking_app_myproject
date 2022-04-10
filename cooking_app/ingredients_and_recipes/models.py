@@ -1,5 +1,6 @@
 from django.db import models
 
+
 MEASURES_CHOICES =(
     ("стак.", "стак."),
     ("ст.л.", "ст.л."),
@@ -40,7 +41,7 @@ class IngredientQuantity(models.Model):
 
     def __str__(self):
         if not self.annotation:
-            return self.ingredient.name + " - " + str(self.quantity_gr) + " " + self.measure
+            return self.ingredient.name + " - " + str(self.quantity) + " " + self.measure
         else:
             return self.ingredient.name + " " + self.annotation
 
@@ -59,3 +60,25 @@ class Recipe(models.Model):
     #     self.name = self.name.capitalize()
     #     return super(Recipe, self).save(*args, **kwargs)
 
+
+class EatingCathegory(models.Model):
+    name = models.CharField(max_length=255)
+    time = models.TimeField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Eating(models.Model):
+    eatingcathegory = models.ForeignKey(EatingCathegory, on_delete=models.CASCADE)
+    dish = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    forhowmanypersons = models.PositiveSmallIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.eatingcathegory) + " - " + str(self.dish) + " - " + str(self.forhowmanypersons)
+
+class Menu(models.Model):
+    data = models.DateField(max_length=255)
+    eatings = models.ManyToManyField(Eating, verbose_name="list of eating")
+
+    def __str__(self):
+        return str(self.data)

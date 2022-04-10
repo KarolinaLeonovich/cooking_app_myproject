@@ -9,7 +9,11 @@ class IngredientAdmin(admin.ModelAdmin):
         'calories_per_100_gr',
         'protein_per_100_gr',
         'fat_per_100_gr',
-        'carbohydrates_per_100_gr'
+        'carbohydrates_per_100_gr',
+        "cup250sm",
+        "bigspoon",
+        "littlespoon",
+        "onepiece",
     )
 
 
@@ -27,9 +31,30 @@ class IngredientQuantityAdmin(admin.ModelAdmin):
         return False
 
 
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )
+
+
+@admin.register(EatingCathegory)
+class EatingCathegoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'time',
+    )
+
+
+@admin.register(Eating)
+class EatingAdmin(admin.ModelAdmin):
+    list_display = (
+        'eatingcathegory',
+        'dish',
+        'forhowmanypersons',
+    )
+
+
+@admin.register(Menu)
+class MenuAdmin(admin.ModelAdmin):
+    pass

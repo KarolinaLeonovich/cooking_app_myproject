@@ -1,8 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from ingredients_and_recipes.forms import IngredientForm, RecipeForm
-from ingredients_and_recipes.models import Recipe, Ingredient
-
+from ingredients_and_recipes.models import Recipe, Ingredient, Menu
 
 class RecipeList(ListView):
     model = Recipe
@@ -41,3 +40,8 @@ class RecipeDetailView(ListView):
             return Recipe.objects.all()
         else:
             return Recipe.objects.filter(id=self.kwargs['rec_id'])
+
+
+class MenuView(ListView):
+    model = Menu
+    template_name = 'menu_detail.html'
