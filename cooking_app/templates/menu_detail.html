@@ -12,13 +12,13 @@
 <header>
         <nav class="dvs-menu">
             <ul>
-                {% if recipe_list|length > 1 %}
+                {% if menu_list|length > 1 %}
                 <li><a href="/recipes/newmenu" title="Новый рецепт"><i class="fas fa-plus"></i></a></li>
-                {% for recipe in recipe_list %}
-                <li><a href="/recipes/menu/{{ menu.id }}">{{ menu.name }}</a></li>
+                {% for menu in menu_list %}
+                <li><a href="/recipes/menu/{{ menu.id }}">{{ menu.id }}</a></li>
                 {% endfor %}
                 {% else %}
-                {% for recipe in recipe_list %}
+                {% for menu in menu_list %}
                 <li><a href="">Приемы пищи - <br/>{% for area in menu.eatings.all %}{{ area }}<br/>{% endfor %} </a></li>
                 <br>
                 <li><a href="">Дата - {{ menu.data }} гр.</a></li>
@@ -26,6 +26,7 @@
                 {% endfor %}
                 {% endif %}
             </ul>
+        </nav>
 </header>
 
 </body>

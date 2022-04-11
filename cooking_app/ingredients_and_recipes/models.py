@@ -69,6 +69,8 @@ class EatingCathegory(models.Model):
         return self.name
 
 class Eating(models.Model):
+    class Meta:
+        ordering = ['eatingcathegory']
     eatingcathegory = models.ForeignKey(EatingCathegory, on_delete=models.CASCADE)
     dish = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     forhowmanypersons = models.PositiveSmallIntegerField(blank=True, null=True)

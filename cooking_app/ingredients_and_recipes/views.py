@@ -42,6 +42,6 @@ class RecipeDetailView(ListView):
             return Recipe.objects.filter(id=self.kwargs['rec_id'])
 
 
-class MenuView(ListView):
+class MenuDetailView(ListView):
     model = Menu
     template_name = 'menu_detail.html'
