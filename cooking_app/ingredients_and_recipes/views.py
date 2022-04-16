@@ -1,6 +1,6 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView
-from ingredients_and_recipes.forms import IngredientForm, RecipeForm
+from ingredients_and_recipes.forms import IngredientForm, RecipeForm, MenuForm
 from ingredients_and_recipes.models import Recipe, Ingredient, Menu
 
 class RecipeList(ListView):
@@ -12,13 +12,17 @@ class CreateIngredientView(CreateView):
     model = Ingredient
     form_class = IngredientForm
     template_name = 'newingredient.html'
-    success_url = reverse_lazy('list_of_ingredients')
+
+    def get_success_url(self):
+        return reverse('allrecipes')
 
 class CreateRecipeView(CreateView):
     model = Recipe
     form_class = RecipeForm
     template_name = 'newrecipe.html'
-    success_url = reverse_lazy('list_of_ingredients')
+
+    def get_success_url(self):
+        return reverse('allrecipes')
 
 class IngredientDetailView(ListView):
     model = Ingredient
@@ -45,3 +49,18 @@ class RecipeDetailView(ListView):
 class MenuDetailView(ListView):
     model = Menu
     template_name = 'menu_detail.html'
+
+    def get_queryset(self):
+        if self.kwargs['menu_id'] == 0:
+            return Menu.objects.all()
+        else:
+            return Menu.objects.filter(id=self.kwargs['menu_id'])
+
+
+class CreateMenuView(CreateView):
+    model = Menu
+    form_class = MenuForm
+    template_name = 'newmenu.html'
+
+    def get_success_url(self):
+        return reverse('allrecipes')

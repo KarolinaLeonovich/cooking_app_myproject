@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Ingredient, Recipe, IngredientQuantity
+from .models import Ingredient, Recipe, IngredientQuantity, Menu
 
 
 class IngredientForm(forms.ModelForm):
@@ -10,8 +10,8 @@ class IngredientForm(forms.ModelForm):
         model = Ingredient
         fields = ['name', 'calories_per_100_gr', 'protein_per_100_gr', 'fat_per_100_gr', 'carbohydrates_per_100_gr']
 
-class RecipeForm(forms.ModelForm):
 
+class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ['name', 'eng_name', 'ingredient_quantity', 'how_to_cook', 'for_how_many_persons']
@@ -21,6 +21,10 @@ class RecipeForm(forms.ModelForm):
     )
 
 
+class MenuForm(forms.ModelForm):
+    class Meta:
+        model = Menu
+        fields = ['data', 'eatings']
 
 # class UserCreateForm(UserCreationForm):
 #     email = forms.EmailField(required=True)
